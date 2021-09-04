@@ -152,29 +152,31 @@ math statement, and exclude them in the other direction."
                (goto-char orig-pos)))))))
 
 (defun math-delimiters--toggle-line-breaks (open close)
-  (let* ((to-display (equal (car math-delimiters-display) open))
-         (toggle-closing `(if ,to-display
-                              (progn
-                                (TeX-newline)
-                                (search-backward ,close)
-                                (TeX-newline))
-                            (join-line -1)
-                            (join-line -1)
-                            (backward-char (1+ (length ,close)))))
-         (toggle-open `(if ,to-display
-                           (progn (TeX-newline)
-                                  (forward-char (length ,open))
-                                  (TeX-newline))
-                         (join-line)
-                         (join-line -1)
-                         ;; If necessary, like when the inline delimiters are
-                         ;; Dollars, fix `join-line's whitespace insertion.
-                         (when (equal (char-after) ?\s)
-                           (delete-char 1)))))
-    (eval toggle-closing)
-    (search-backward open)
-    (eval toggle-open))
-  (search-forward close))
+  (let* ((to-display (equal (car math-delimiters-display) open)))
+    (cl-flet ((toggle-close ()
+                (if to-display
+                    (progn
+                      (newline-and-indent)
+                      (search-backward close)
+                      (newline-and-indent))
+                  (join-line -1)
+                  (join-line -1)
+                  (backward-char (1+ (length close)))))
+              (toggle-open ()
+                (if to-display
+                    (progn (newline-and-indent)
+                           (forward-char (length open))
+                           (newline-and-indent))
+                  (join-line)
+                  (join-line -1)
+                  ;; If necessary, like when the inline delimiters are
+                  ;; Dollars, fix `join-line's whitespace insertion.
+                  (when (equal (char-after) ?\s)
+                    (delete-char 1)))))
+      (toggle-close)
+      (search-backward open)
+      (toggle-open)
+      (search-forward close))))
 
 ;;;###autoload
 (defun math-delimiters-toggle (arg)
