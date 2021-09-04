@@ -100,13 +100,13 @@
           (const :tag "Dollars" ("$$" . "$$"))
           (cons :tag "Other" string string)))
 
-(defcustom math-delimiters-include-characters nil
+(defcustom math-delimiters-include-characters ",.;"
   "Characters to include in display math mode.
 If any of them are right behind an inline math equation, slurp
 them into the display math environment and barf them back out
 when converting to inline math."
   :group 'math-delimiters
-  :type '(list character))
+  :type 'string)
 
 (defcustom math-delimiters-compressed-display-math t
   "Whether display math should be compressed.
@@ -133,23 +133,23 @@ math version and
 
 (defun math-delimiters--slurp-or-barf-characters (from-close)
   "Slurp or barf characters.
-The list of values to consider is given by
+The characters considered are the ones in the string
 `math-delimiters-include-characters'.  Thus, include these
 characters in display math should they come right after an inline
-math statement, and exclude them in the other direction."
-  (cl-flet ((on-char-p (pos)
-                       (cl-loop for punct in math-delimiters-include-characters
-                                do (when (= punct pos)
-                                     (cl-return t)))))
-    (if (equal from-close (cdr math-delimiters-inline)) ; from inline math
-        (when (on-char-p (char-after))
-          (forward-char))
-      (let ((orig-pos (point)))         ; from display math
-        (skip-chars-backward " \t\n" (point-min))
-        (cond ((on-char-p (char-before))
-               (backward-char))
-              (math-delimiters-compressed-display-math
-               (goto-char orig-pos)))))))
+math statement, and exclude them in the other direction.
+
+The FROM-CLOSE parameter indicates the closing delimiter
+currently at point and is used to decide whether to slurp or
+barf."
+  (if (equal from-close (cdr math-delimiters-inline)) ; from inline math
+      (when (cl-find (char-after) math-delimiters-include-characters)
+        (forward-char))
+    (let ((orig-pos (point)))           ; from display math
+      (skip-chars-backward " \t\n")
+      (cond ((cl-find (char-before) math-delimiters-include-characters)
+             (backward-char))
+            (math-delimiters-compressed-display-math
+             (goto-char orig-pos))))))
 
 (defun math-delimiters--toggle-line-breaks (open close)
   (let* ((to-display (equal (car math-delimiters-display) open)))
