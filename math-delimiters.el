@@ -94,6 +94,29 @@ when converting to inline math."
   :group 'math-delimiters
   :type '(list character))
 
+(defcustom math-delimiters-compressed-display-math t
+  "Whether display math should be compressed.
+A value of `t' means that, when transforming from inline to
+display math, no additional line breaks are inserted.  For
+example, we go from
+
+    text-before \\(1 + 1\\) text-after
+
+to
+
+    text-before \\=\\[1 + 1\\] text-after.
+
+A value of `nil', however, would switch between the above inline
+math version and
+
+    text-before
+    \\=\\[
+      1 + 1
+    \\]
+    text-after."
+  :group 'math-delimiters
+  :type 'boolean)
+
 (defun math-delimiters--slurp-or-barf-characters (from-close)
   "Slurp or barf characters.
 The list of values to consider is given by
@@ -109,9 +132,35 @@ math statement, and exclude them in the other direction."
           (forward-char))
       (let ((orig-pos (point)))         ; from display math
         (skip-chars-backward " \t\n" (point-min))
-        (when (on-char-p (char-before))
-          (backward-char)
-          (goto-char orig-pos))))))
+        (cond ((on-char-p (char-before))
+               (backward-char))
+              (math-delimiters-compressed-display-math
+               (goto-char orig-pos)))))))
+
+(defun math-delimiters--toggle-line-breaks (open close)
+  (let* ((to-display (equal (car math-delimiters-display) open))
+         (toggle-closing `(if ,to-display
+                              (progn
+                                (TeX-newline)
+                                (search-backward ,close)
+                                (TeX-newline))
+                            (join-line -1)
+                            (join-line -1)
+                            (backward-char (1+ (length ,close)))))
+         (toggle-open `(if ,to-display
+                           (progn (TeX-newline)
+                                  (forward-char (length ,open))
+                                  (TeX-newline))
+                         (join-line)
+                         (join-line -1)
+                         ;; If necessary, like when the inline delimiters are
+                         ;; Dollars, fix `join-line's whitespace insertion.
+                         (when (equal (char-after) ?\s)
+                           (delete-char 1)))))
+    (eval toggle-closing)
+    (search-backward open)
+    (eval toggle-open))
+  (search-forward close))
 
 ;;;###autoload
 (defun math-delimiters-toggle (arg)
@@ -165,7 +214,9 @@ delimiters."
                               (delete-char (length from-open))
                               (insert to-open)
                               (goto-char (+ end (- (length to-open)
-                                                   (length from-open))))))
+                                                   (length from-open)))))
+                            (unless math-delimiters-compressed-display-math
+                              (math-delimiters--toggle-line-breaks to-open to-close)))
                 (middle-p (open close)
                           (and (looking-at (regexp-quote close))
                                (looking-back (regexp-quote open)
