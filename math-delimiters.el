@@ -48,7 +48,8 @@
 
 ;;;###autoload
 (defun math-delimiters-no-dollars ()
-  "Convert math formulas in buffer from dollars to \\(\\) and \\[\\]."
+  "Convert math formulas in buffer from dollars to \\(\\) and
+\\=\\[\\]."
   (interactive)
   (cl-flet ((replace-all (a b &optional c)
                (goto-char (point-min))
@@ -90,7 +91,7 @@
   "Toggle between $...$ and \\(...\\) for inline math.
 When ARG is non-nil (interactively, if called with universal
 prefix argument), also toggle the display math delimiters between
-$$...$$ and \\[...\\]."
+$$...$$ and \\=\\[...\\]."
   (interactive "P")
   (setf math-delimiters-inline
         (if (equal math-delimiters-inline '("\\(" . "\\)"))
@@ -113,7 +114,7 @@ $$...$$ and \\[...\\]."
 If region is active surround it.  When repeated, toggle between
 display and inline math.  Also toggle between display and inline
 if called from inside empty math delimiters, or just after math
-delimeters."
+delimiters."
   (interactive)
   (if (and (eq major-mode 'org-mode)
            (save-excursion
