@@ -86,6 +86,33 @@
           (const :tag "Dollars" ("$$" . "$$"))
           (cons :tag "Other" string string)))
 
+(defcustom math-delimiters-include-characters nil
+  "Characters to include in display math mode.
+If any of them are right behind an inline math equation, slurp
+them into the display math environment and barf them back out
+when converting to inline math."
+  :group 'math-delimiters
+  :type '(list character))
+
+(defun math-delimiters--slurp-or-barf-characters (from-close)
+  "Slurp or barf characters.
+The list of values to consider is given by
+`math-delimiters-include-characters'.  Thus, include these
+characters in display math should they come right after an inline
+math statement, and exclude them in the other direction."
+  (cl-flet ((on-char-p (pos)
+                       (cl-loop for punct in math-delimiters-include-characters
+                                do (when (= punct pos)
+                                     (cl-return t)))))
+    (if (equal from-close (cdr math-delimiters-inline)) ; from inline math
+        (when (on-char-p (char-after))
+          (forward-char))
+      (let ((orig-pos (point)))         ; from display math
+        (skip-chars-backward " \t\n" (point-min))
+        (when (on-char-p (char-before))
+          (backward-char)
+          (goto-char orig-pos))))))
+
 ;;;###autoload
 (defun math-delimiters-toggle (arg)
   "Toggle between $...$ and \\(...\\) for inline math.
@@ -130,6 +157,7 @@ delimiters."
                                        (- (point) (length close))))
                 (flip-after (from-open from-close to-open to-close)
                             (delete-char (- (length from-close)))
+                            (math-delimiters--slurp-or-barf-characters from-close)
                             (insert to-close)
                             (let ((end (point)))
                               (backward-char (length to-close))
