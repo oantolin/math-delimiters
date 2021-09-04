@@ -24,6 +24,20 @@ The delimiters used for inline math and display math by
 quickly toggle between =$...$= and =\(...\)= for inline math and between
 =$$...$$= and =\[...\]= for display math.
 
+By default, inline math is translated into display math with no
+additional line breaks. This can be modified by setting
+=math-delimiters-compressed-display-math= to =nil=. For example,
+expression of the form =\(...\)= will then be translated to
+=\n\[\n...\n\]\n=.
+
+When translating inline math to display math, often it is desirable to
+include punctuation into the display math and exclude it from of the
+inline math environment. For that purpose, the variable
+=math-delimiters-include-characters= is available; it takes a list of
+characters to act upon.  For example, setting it to =(?.)= and then
+toggling to display math on the expression =\(\eta\).= would turn it
+into =\[\eta.\]=.
+
 Finally, a command =math-delimiters-no-dollars= is provided to replace
 all =$...$= and =$$...$$= delimiters with =\(...\)= and =\[...\]=,
 respectively. Sadly, this package offers no help convincing coauthors
