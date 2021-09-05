@@ -51,16 +51,16 @@ like this:
 #+begin_src emacs-lisp
   (autoload 'math-delimiters-insert "math-delimiters")
 
-  (with-eval-after-load org
+  (with-eval-after-load 'org
     (define-key org-mode-map "$" #'math-delimiters-insert))
 
-  (with-eval-after-load tex               ; for AUCTeX
+  (with-eval-after-load 'tex              ; for AUCTeX
     (define-key TeX-mode-map "$" #'math-delimiters-insert))
 
-  (with-eval-after-load tex-mode          ; for the built-in TeX/LaTeX modes
+  (with-eval-after-load 'tex-mode         ; for the built-in TeX/LaTeX modes
     (define-key tex-mode-map "$" #'math-delimiters-insert))
 
-  (with-eval-after-load cdlatex
+  (with-eval-after-load 'cdlatex
     (define-key cdlatex-mode-map "$" nil))
 #+end_src
 
@@ -73,10 +73,10 @@ from the TeX mode ones), if you only want to use it in LaTeX buffers
 you can use this instead:
 
 #+begin_src emacs-lisp
-  (with-eval-after-load latex             ; for AUCTeX
+  (with-eval-after-load 'latex            ; for AUCTeX
     (define-key LaTeX-mode-map "$" #'math-delimiters-insert))
 
-  (with-eval-after-load tex-mode          ; for the built-in LaTeX mode
+  (with-eval-after-load 'tex-mode         ; for the built-in LaTeX mode
     (define-key latex-mode-map "$" #'math-delimiters-insert))
 #+end_src
 
