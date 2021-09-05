@@ -145,7 +145,8 @@ barf."
       (when (cl-find (char-after) math-delimiters-include-characters)
         (forward-char))
     (let ((orig-pos (point)))           ; from display math
-      (skip-chars-backward " \t\n")
+      (skip-chars-backward " \t")
+      (when (bolp) (backward-char 1) (skip-chars-backward " \t"))
       (cond ((cl-find (char-before) math-delimiters-include-characters)
              (backward-char))
             (math-delimiters-compressed-display-math
