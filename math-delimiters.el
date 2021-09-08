@@ -248,6 +248,7 @@ delimiters."
                    (backward-char (length to-close))
                    (unless (or math-delimiters-compressed-display-math
                                (equal to-close close))
+                     (beginning-of-line)
                      (backward-char 1))))
         (cond
           ((use-region-p)
