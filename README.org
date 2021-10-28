@@ -33,10 +33,10 @@ expression of the form =\(...\)= will then be translated to
 When translating inline math to display math, often it is desirable to
 include punctuation into the display math and exclude it from of the
 inline math environment. For that purpose, the variable
-=math-delimiters-include-characters= is available; it takes a list of
-characters to act upon.  For example, setting it to =(?.)= and then
-toggling to display math on the expression =\(\eta\).= would turn it
-into =\[\eta.\]=.
+=math-delimiters-include-characters= is available; it is a string
+consisting of the punctuation characters to act upon. The default
+value is ",.;". So, for example, toggling to display math on the
+expression =\(\eta\).= would turn it into =\[\eta.\]=.
 
 Finally, a command =math-delimiters-no-dollars= is provided to replace
 all =$...$= and =$$...$$= delimiters with =\(...\)= and =\[...\]=,
