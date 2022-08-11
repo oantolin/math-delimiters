@@ -1,13 +1,13 @@
 * math-delimiters
 
 This package provides the command =math-delimiters-insert= to insert
-TeX/LaTeX math delimiters. This command is meant to be bound to $ in
+TeX/LaTeX math delimiters. This command is meant to be bound to =$= in
 buffers where the user wants to use it. The author, for example, binds
 it in =LaTeX-mode-map= and in =org-mode-map=.
 
 Note that the excellent =cdlatex= includes a =cdlatex-dollar= command that
-it binds to $. Users of both packages will probably want to unbind $
-in =cdlatex-mode-map=.
+it binds to =$=. Users of both packages will probably want to
+unbind =$= in =cdlatex-mode-map=.
 
 The =math-delimiters-insert= command behaves as follows: if the region
 is active, it surrounds it with inline math delimiters and leaves the
