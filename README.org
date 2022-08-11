@@ -67,7 +67,7 @@ like this:
 (Most people only use one out of AUCTeX and the built-in TeX/LaTeX
 modes, so you probably only need one of those forms.)
 
-The above configuration will setup the $ key to insert math delimiters
+The above configuration will setup the =$= key to insert math delimiters
 in both TeX and LaTeX buffers (because the LaTeX mode maps inherit
 from the TeX mode ones), if you only want to use it in LaTeX buffers
 you can use this instead:
