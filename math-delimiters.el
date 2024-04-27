@@ -61,17 +61,19 @@
 (require 'cl-lib)
 
 ;;;###autoload
-(defun math-delimiters-no-dollars ()
-  "Convert math formulas in buffer from dollars to \\(\\) and
-\\=\\[\\]."
-  (interactive)
+(defun math-delimiters-no-dollars (&optional beg end)
+  "Convert math formulas in buffer from dollars to \\(\\) and \\=\\[\\].
+If a region is active, convert all formulas from BEG to END instead."
+  (interactive
+   (when (region-active-p)
+     (list (region-beginning) (region-end))))
   (cl-flet ((replace-all (a b &optional c)
-               (goto-char (point-min))
-               (while (search-forward a nil t)
-                 (replace-match b t t)
-                 (when c
-                   (search-forward a)
-                   (replace-match c t t)))))
+              (goto-char (or beg (point-min)))
+              (while (search-forward a end t)
+                (replace-match b t t)
+                (when c
+                  (search-forward a)
+                  (replace-match c t t)))))
     (save-excursion
       (replace-all "\\$" "\\dollar ")
       (replace-all "$$" "\\[" "\\]")
